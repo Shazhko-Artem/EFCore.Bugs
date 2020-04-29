@@ -36,7 +36,7 @@ namespace EFCore.Bugs
         }
 
         /// <summary>
-        /// Thanks to the "enumValue" variable, the SQL query is better, so this option is preferred.
+        /// Thanks to the "enumValue" variable, the SQL query is better, so this option is preferred if enum without 'FlagsAttribute'.
         /// </summary>
         /// <param name="serviceProvider"></param>
         private static void Resolve_1(ServiceProvider serviceProvider)
@@ -55,7 +55,7 @@ namespace EFCore.Bugs
         }
 
         /// <summary>
-        ///An alternative way to solve. But a stupid 'CAST()' will be added.
+        /// An alternative way to solve. But will be bitwise comparison instead direct comparison.
         /// </summary>
         /// <param name="serviceProvider"></param>
         private static void Resolve_2(ServiceProvider serviceProvider)
