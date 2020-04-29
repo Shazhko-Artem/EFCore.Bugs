@@ -23,7 +23,7 @@ namespace EFCore.Bugs
         {
             options.UseLoggerFactory(loggerFactory)
                 .EnableSensitiveDataLogging();
-            options.UseSqlServer("Data Source=SHAZHKO\\MSSQLSERVER16; Initial Catalog=EFCore.Bugs; User Id=dbadmin;Password=Pwd12345!; MultipleActiveResultSets=True;");
+            options.UseSqlServer("Data Source=.; Initial Catalog=EFCore.Bugs; MultipleActiveResultSets=True;");
         }
     }
 }
