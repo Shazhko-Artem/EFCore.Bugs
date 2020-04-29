@@ -13,8 +13,8 @@ namespace EFCore.Bugs
         {
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
-
             var serviceProvider = serviceCollection.BuildServiceProvider();
+
             CreateUsers(serviceProvider);
             Issue(serviceProvider);
             Resolve_1(serviceProvider);
@@ -35,6 +35,10 @@ namespace EFCore.Bugs
                 }).ToList();
         }
 
+        /// <summary>
+        /// Thanks to the "enumValue" variable, the SQL query is better, so this option is preferred.
+        /// </summary>
+        /// <param name="serviceProvider"></param>
         private static void Resolve_1(ServiceProvider serviceProvider)
         {
             using var db = serviceProvider.GetService<AppDbContext>();
@@ -50,6 +54,10 @@ namespace EFCore.Bugs
                 }).ToList();
         }
 
+        /// <summary>
+        ///An alternative way to solve. But a stupid 'CAST()' will be added.
+        /// </summary>
+        /// <param name="serviceProvider"></param>
         private static void Resolve_2(ServiceProvider serviceProvider)
         {
             using var db = serviceProvider.GetService<AppDbContext>();
