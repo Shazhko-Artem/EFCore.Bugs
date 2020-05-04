@@ -36,16 +36,12 @@ namespace EFCore.Bugs
                 .Select(b => new UserModel()
                 {
                     Id = b.Id,
-                    IsValue1 = b.Address.SomeEnum == SomeEnum.Value2 // if SomeEnum.Value2 == takeValue then throw Exception
+                    IsValue1 = b.Address.SomeEnum.Equals(SomeEnum.Value2) // if SomeEnum.Value2 == takeValue then throw Exception
                 })
                 // .Where(u => u.IsValue1)
                 .ToList();
         }
 
-        /// <summary>
-        /// Move 'Take' after 'Select'
-        /// </summary>
-        /// <param name="serviceProvider"></param>
         private static void Resolve_1(ServiceProvider serviceProvider)
         {
             var logger = serviceProvider.GetService<ILogger<Program>>();
@@ -54,21 +50,42 @@ namespace EFCore.Bugs
 	        var takeValue = 2;
 	        var users = db.Users
 		        .Include(u => u.Address)
+                .Take(takeValue)
+		        .Select(b => new UserModel()
+		        {
+			        Id = b.Id,
+			        IsValue1 = b.Address.SomeEnum.Equals(SomeEnum.Value2)
+		        })
+                // .Where(u => u.IsValue1) // if add the 'Where' then EF will generate the same SQL as for Resolve #1, #2 and #3
+		        .ToList();
+        }
+
+        /// <summary>
+        /// Move 'Take' after 'Select'
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        private static void Resolve_2(ServiceProvider serviceProvider)
+        {
+	        var logger = serviceProvider.GetService<ILogger<Program>>();
+	        logger.LogInformation("[Resolve #1] Running...");
+	        using var db = serviceProvider.GetService<AppDbContext>();
+	        var takeValue = 2;
+	        var users = db.Users
+		        .Include(u => u.Address)
 		        .Select(b => new UserModel()
 		        {
 			        Id = b.Id,
 			        IsValue1 = b.Address.SomeEnum == SomeEnum.Value2
 		        })
-                // .Where(u => u.IsValue1) // if add the 'Where' then EF will generate the same SQL as for Resolve #1, #2 and #3
-                .Take(takeValue)
+		        // .Where(u => u.IsValue1) // if add the 'Where' then EF will generate the same SQL as for Resolve #1, #2 and #3
+		        .Take(takeValue)
 		        .ToList();
         }
-
         /// <summary>
         /// Thanks to the "enumValue" variable, the SQL query is better, so this option is preferred if enum without 'FlagsAttribute'.
         /// </summary>
         /// <param name="serviceProvider"></param>
-        private static void Resolve_2(ServiceProvider serviceProvider)
+        private static void Resolve_3(ServiceProvider serviceProvider)
         {
 	        var logger = serviceProvider.GetService<ILogger<Program>>();
 	        logger.LogInformation("[Resolve #2] Running...");
@@ -91,7 +108,7 @@ namespace EFCore.Bugs
         /// An alternative way to solve. But will be bitwise comparison instead direct comparison.
         /// </summary>
         /// <param name="serviceProvider"></param>
-        private static void Resolve_3(ServiceProvider serviceProvider)
+        private static void Resolve_4(ServiceProvider serviceProvider)
         {
 	        var logger = serviceProvider.GetService<ILogger<Program>>();
 	        logger.LogInformation("[Resolve #3] Running...");
